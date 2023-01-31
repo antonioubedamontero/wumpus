@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { BaseModule } from '../base/base.module';
 import { ControlsComponent } from './controls/controls.component';
+import { PipesModule } from '../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { ControlsComponent } from './controls/controls.component';
   ],
   imports: [
     CommonModule,
-    BaseModule
+    BaseModule,
+    PipesModule
   ],
   exports: [
     ControlsComponent

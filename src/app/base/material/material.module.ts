@@ -5,7 +5,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
-import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -16,7 +15,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatFormFieldModule,
     MatIconModule,
     MatSliderModule,
-    MatTableModule,
     MatToolbarModule,
     MatTooltipModule
   ]

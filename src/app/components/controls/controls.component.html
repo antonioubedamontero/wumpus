@@ -1,4 +1,9 @@
 <mat-toolbar fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+    <div class="direction-bar" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <span>Dirección:</span>
+        <mat-icon>{{ currentDirection | translateDirection }}</mat-icon>
+    </div>
+
     <button mat-icon-button>
         <mat-icon (click)="doAction('throwArrow')" matTooltip="Lanzar flecha">
             sports_martial_arts
