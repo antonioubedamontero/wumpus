@@ -84,54 +84,100 @@ export class GameService {
     return hero;
   }
 
+  getHeroOutOfBoard(hero: Hero): Hero {
+    hero.orientation = 'None';
+
+    this.board[hero.row][hero.col].hasHero = false;
+
+    hero.row = -1;
+    hero.col = -1;
+
+    return hero;
+  }
+
   advanceHeroInBoard(heroParam: Hero): HeroWithFeedBack {
-    // TODO: Pending implemmentation
-    const hero = { ...heroParam };
-    const feedbackMessages: string[] = [];
+    let heroWithFeedback: HeroWithFeedBack = {
+      hero: { ...heroParam },
+      feedbackMessages: [],
+      isHeroAlive: true
+    };
     const cantAdvance = 'No puedo avanzar. Hay un muro';
 
     switch (heroParam.orientation) {
       case 'N':
-        if (heroParam.row - 1 >= 0) {
-          hero.row = heroParam.row - 1;
+        const prevRow = heroParam.row - 1;
+        if (prevRow >= 0) {
+          heroWithFeedback.hero.row = prevRow;
           this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[heroParam.row - 1][heroParam.col].hasHero = true;
+          this.board[prevRow][heroParam.col].hasHero = true;
+          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
-          feedbackMessages.push(cantAdvance);
+          heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
         break;
       case 'S':
-        if (heroParam.row + 1 < this.size) {
-          hero.row = heroParam.row + 1;
+        const nextRow = heroParam.row + 1;
+        if (nextRow < this.size) {
+          heroWithFeedback.hero.row = nextRow;
           this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[heroParam.row + 1][heroParam.col].hasHero = true;
+          this.board[nextRow][heroParam.col].hasHero = true;
+          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
-          feedbackMessages.push(cantAdvance);
+          heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
         break;
       case 'E':
-        if (heroParam.col + 1 < this.size) {
-          hero.col = heroParam.col + 1;
+        const nextCol = heroParam.col + 1;
+        if (nextCol < this.size) {
+          heroWithFeedback.hero.col = nextCol;
           this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[heroParam.row][heroParam.col + 1].hasHero = true;
+          this.board[heroParam.row][nextCol].hasHero = true;
+          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
-          feedbackMessages.push(cantAdvance);
+          heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
         break;
       case 'W':
-        if (heroParam.col - 1 >= 0) {
-          hero.col = heroParam.col - 1;
+        const prevCol = heroParam.col - 1;
+        if (prevCol >= 0) {
+          heroWithFeedback.hero.col = prevCol;
           this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[heroParam.row][heroParam.col - 1].hasHero = true;
+          this.board[heroParam.row][prevCol].hasHero = true;
+          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
-          feedbackMessages.push(cantAdvance);
+          heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
         break;
       default:
         throw new Error('Movement not defined');
     }
 
-    return { hero, feedbackMessages };
+    return heroWithFeedback;
+  }
+
+  private getMovementReaction(heroParam: Hero): HeroWithFeedBack {
+    const feedbackMessages: string[] = [];
+    let isHeroAlive = true;
+    const hero = { ...heroParam };
+
+    if (this.board[hero.row][hero.col].hasGold) {
+      feedbackMessages.push('Puedo percibir el brillo del oro');
+      hero.hasGold = true;
+    }
+
+    const boardEnemy = this.board[hero.row][hero.col].enemies;
+
+    if (boardEnemy === 'monster') {
+      feedbackMessages.push('Me ha matado el Wumpus');
+      isHeroAlive = false;
+    }
+
+    if (boardEnemy === 'well') {
+      feedbackMessages.push('He caído a un pozo');
+      isHeroAlive = false;
+    }
+
+    return { hero, feedbackMessages, isHeroAlive };
   }
 
   heroAttacks(hero: Hero): void {

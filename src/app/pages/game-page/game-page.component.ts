@@ -9,7 +9,6 @@ import { GameService } from '../../services/game.service';
 })
 export class GamePageComponent implements OnInit {
   hero: Hero;
-  canExitEnter = true;
   feedbackMessages: string[] = [];
 
   constructor(private gameService: GameService) {
@@ -28,13 +27,13 @@ export class GamePageComponent implements OnInit {
     }
 
     if (movementResponse.additionalAction === 'exitEnter' && this.hero.orientation === 'None') {
-      this.canExitEnter = false;
       this.hero = this.gameService.getHeroIntoBoard(this.hero);
       return;
     }
 
-    if (movementResponse.additionalAction === 'exitEnter' && this.hero.hasGold &&
-      this.hero.row === this.gameService.size - 1 && this.hero.col === 0) {
+    if (movementResponse.additionalAction === 'exitEnter' && this.hero.hasGold) {
+      this.hero = this.gameService.getHeroOutOfBoard(this.hero);
+
       // TODO: Pending can go out when has gold
       return;
     }
@@ -46,10 +45,16 @@ export class GamePageComponent implements OnInit {
     }
 
     if (movementResponse.additionalAction === 'goForward') {
-      const { hero, feedbackMessages } = this.gameService.advanceHeroInBoard(this.hero);
+      const { hero, feedbackMessages, isHeroAlive } = this.gameService.advanceHeroInBoard(this.hero);
       this.hero = hero;
       this.feedbackMessages = feedbackMessages;
+      console.log(`Is live? ${isHeroAlive}`);
       return;
     }
+  }
+
+  get canExitEnter(): boolean {
+    return (this.hero.row === -1 && this.hero.col === -1) ||
+      (this.hero.hasGold && this.hero.row === this.gameService.size - 1 && this.hero.col === 0);
   }
 }
