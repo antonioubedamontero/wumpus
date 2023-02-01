@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WinPageComponent } from './win-page.component';
+import { ControlsComponent } from './controls.component';
 
-describe('WinPageComponent', () => {
-  let component: WinPageComponent;
-  let fixture: ComponentFixture<WinPageComponent>;
+describe('ControlsComponent', () => {
+  let component: ControlsComponent;
+  let fixture: ComponentFixture<ControlsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WinPageComponent ]
+      declarations: [ ControlsComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(WinPageComponent);
+    fixture = TestBed.createComponent(ControlsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

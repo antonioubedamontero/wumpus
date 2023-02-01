@@ -1,0 +1,36 @@
+<mat-toolbar fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+    <div class="direction-bar" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <span>Dirección:</span>
+        <mat-icon>{{ currentDirection | translateDirection }}</mat-icon>
+    </div>
+
+    <button mat-icon-button>
+        <mat-icon (click)="doAction('throwArrow')" matTooltip="Lanzar flecha">
+            sports_martial_arts
+        </mat-icon>
+    </button>
+
+    <button [disabled]="!canExitEnter" mat-icon-button>
+        <mat-icon (click)="doAction('exitEnter')" matTooltip="Salir / Entrar">
+            logout
+        </mat-icon>
+    </button>
+
+    <button mat-icon-button>
+        <mat-icon (click)="doAction('turnLeft')" matTooltip="Girar a la izquierda">
+            turn_left
+        </mat-icon>
+    </button>
+
+    <button mat-icon-button>
+        <mat-icon (click)="doAction('goForward')" matTooltip="Avanzar">
+            straight
+        </mat-icon>
+    </button>
+
+    <button mat-icon-button>
+        <mat-icon (click)="doAction('turnRight')" matTooltip="Girar a la derecha">
+            turn_right
+        </mat-icon>
+    </button>
+</mat-toolbar>

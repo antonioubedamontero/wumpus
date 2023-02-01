@@ -1,0 +1,12 @@
+<div *ngIf="board.length > 0" class="board" fxLayout="row" fxLayoutAlign="center center">
+    <table>
+        <tr *ngFor="let row of board">
+            <td class="image-container" *ngFor="let cell of row">
+                <img *ngIf="hasMonster(cell)" class="image" src="assets/images/monster.jpg" alt="moster image">
+                <img *ngIf="hasWell(cell)" class="image" src="assets/images/well.jpg" alt="well image">
+                <img *ngIf="hasHero(cell)" class="image image-hero" src="assets/images/archer.svg" alt="hero image">
+                <img *ngIf="hasGold(cell)" class="image" src="assets/images/gold.jpg" alt="gold image">
+            </td>
+        </tr>
+    </table>
+</div>

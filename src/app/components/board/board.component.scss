@@ -1,0 +1,26 @@
+table,
+th,
+td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td {
+    width: 100px;
+    height: 100px;
+}
+
+.image {
+    width: 100px;
+    height: 100px;
+}
+
+.image-container {
+    position: relative;
+}
+
+.image-hero {
+    position: absolute;
+    top: 0;
+    left: -20px;
+}

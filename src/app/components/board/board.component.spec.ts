@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LostPageComponent } from './lost-page.component';
+import { BoardComponent } from './board.component';
 
-describe('LostPageComponent', () => {
-  let component: LostPageComponent;
-  let fixture: ComponentFixture<LostPageComponent>;
+describe('BoardComponent', () => {
+  let component: BoardComponent;
+  let fixture: ComponentFixture<BoardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LostPageComponent ]
+      declarations: [ BoardComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LostPageComponent);
+    fixture = TestBed.createComponent(BoardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
