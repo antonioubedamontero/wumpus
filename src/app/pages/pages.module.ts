@@ -5,6 +5,7 @@ import { GamePageComponent } from './game-page/game-page.component';
 import { WinPageComponent } from './win-page/win-page.component';
 import { LostPageComponent } from './lost-page/lost-page.component';
 import { ComponentsModule } from '../components/components.module';
+import { BaseModule } from '../base/base.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { ComponentsModule } from '../components/components.module';
   ],
   imports: [
     CommonModule,
-    ComponentsModule
+    ComponentsModule,
+    BaseModule
   ],
   exports: [
     ConfigPageComponent,

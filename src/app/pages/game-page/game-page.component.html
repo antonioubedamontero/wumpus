@@ -1,1 +1,15 @@
-<p>game-page works!</p>
+<div>
+    <div class="board">
+        <app-board></app-board>
+    </div>
+    <div class="controls-container">
+        <div class="feedback-message" fxLayout="column" fxLayoutAlign="center center">
+            <p *ngFor="let message of feedbackMessages">
+                {{ message }}
+            </p>
+        </div>
+        <app-controls [currentDirection]="hero.orientation" [canExitEnter]="canExitEnter"
+            (movementResponseEmmited)="receiveMovement($event)">
+        </app-controls>
+    </div>
+</div>
