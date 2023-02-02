@@ -31,4 +31,8 @@ export class BoardComponent implements OnInit {
   hasHero(cell: Cell): boolean {
     return cell.hasHero;
   }
+
+  hasFootPrint(cell: Cell): boolean {
+    return cell.hasBeenVisited && !(cell.enemies || cell.hasHero || cell.hasGold);
+  }
 }

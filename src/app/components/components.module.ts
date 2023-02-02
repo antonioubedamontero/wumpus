@@ -5,11 +5,13 @@ import { BaseModule } from '../base/base.module';
 import { BoardComponent } from './board/board.component';
 import { ControlsComponent } from './controls/controls.component';
 import { PipesModule } from '../pipes/pipes.module';
+import { FinishModalComponent } from './finish-modal/finish-modal.component';
 
 @NgModule({
   declarations: [
     BoardComponent,
-    ControlsComponent
+    ControlsComponent,
+    FinishModalComponent
   ],
   imports: [
     CommonModule,
@@ -18,7 +20,8 @@ import { PipesModule } from '../pipes/pipes.module';
   ],
   exports: [
     BoardComponent,
-    ControlsComponent
+    ControlsComponent,
+    FinishModalComponent
   ]
 })
 export class ComponentsModule { }
