@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Cell, Hero, HeroWithFeedBack, Enemy } from '../interfaces';
+import { Cell, Hero, HeroWithFeedBack, Enemy, Orientation } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +30,8 @@ export class GameService {
       for (let colIndex = 0; colIndex < size; colIndex++) {
         row.push({
           hasHero: false,
-          hasGold: false
+          hasGold: false,
+          hasBeenVisited: false,
         });
       }
       this.board.push(row);
@@ -80,7 +81,7 @@ export class GameService {
     hero.col = 0;
 
     this.board[this.size - 1][0].hasHero = true;
-
+    this.board[this.size - 1][0].hasBeenVisited = true;
     return hero;
   }
 
@@ -104,12 +105,14 @@ export class GameService {
     const cantAdvance = 'No puedo avanzar. Hay un muro';
 
     switch (heroParam.orientation) {
+      // TODO: Refactor this code when possible
       case 'N':
         const prevRow = heroParam.row - 1;
         if (prevRow >= 0) {
           heroWithFeedback.hero.row = prevRow;
           this.board[heroParam.row][heroParam.col].hasHero = false;
           this.board[prevRow][heroParam.col].hasHero = true;
+          this.board[prevRow][heroParam.col].hasBeenVisited = true;
           heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
@@ -121,6 +124,7 @@ export class GameService {
           heroWithFeedback.hero.row = nextRow;
           this.board[heroParam.row][heroParam.col].hasHero = false;
           this.board[nextRow][heroParam.col].hasHero = true;
+          this.board[nextRow][heroParam.col].hasBeenVisited = true;
           heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
@@ -132,6 +136,7 @@ export class GameService {
           heroWithFeedback.hero.col = nextCol;
           this.board[heroParam.row][heroParam.col].hasHero = false;
           this.board[heroParam.row][nextCol].hasHero = true;
+          this.board[heroParam.row][nextCol].hasBeenVisited = true;
           heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
@@ -143,6 +148,7 @@ export class GameService {
           heroWithFeedback.hero.col = prevCol;
           this.board[heroParam.row][heroParam.col].hasHero = false;
           this.board[heroParam.row][prevCol].hasHero = true;
+          this.board[heroParam.row][prevCol].hasBeenVisited = true;
           heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
@@ -156,31 +162,117 @@ export class GameService {
   }
 
   private getMovementReaction(heroParam: Hero): HeroWithFeedBack {
-    const feedbackMessages: string[] = [];
-    let isHeroAlive = true;
     const hero = { ...heroParam };
 
-    if (this.board[hero.row][hero.col].hasGold) {
+    const boardEnemy = this.board[hero.row][hero.col].enemies;
+
+    // Actions that implies death of hero
+    if (boardEnemy === 'monster') {
+      return this.heroDies(hero, 'Me ha matado el Wumpus');
+    }
+
+    if (boardEnemy === 'well') {
+      return this.heroDies(hero, 'He caído a un pozo');
+    }
+
+    // get hero perceptions if any    
+    return this.getHeroPerceptions(hero);
+  }
+
+  heroDies(hero: Hero, message: string): HeroWithFeedBack {
+    return { hero, feedbackMessages: [message], isHeroAlive: false };
+  }
+
+  getHeroPerceptions(heroParam: Hero): HeroWithFeedBack {
+    const isHeroAlive = true;
+    const feedbackMessages: string[] = [];
+    const hero: Hero = { ...heroParam };
+
+    const currenCell: Cell = this.board[hero.row][hero.col];
+
+    if (currenCell.hasGold) {
       feedbackMessages.push('Puedo percibir el brillo del oro');
       hero.hasGold = true;
     }
 
-    const boardEnemy = this.board[hero.row][hero.col].enemies;
+    const windMessage = 'Puedo percibir la brisa de un pozo';
+    const smellMessage = 'Puedo percibir el hedor de la bestia';
 
-    if (boardEnemy === 'monster') {
-      feedbackMessages.push('Me ha matado el Wumpus');
-      isHeroAlive = false;
-    }
+    const validAdjentPositions = this.getValidAdjacentsPositions(hero);
 
-    if (boardEnemy === 'well') {
-      feedbackMessages.push('He caído a un pozo');
-      isHeroAlive = false;
-    }
+    validAdjentPositions.forEach((adjacentPosition: number[]) => {
+      const adjacentCell: Cell = this.board[adjacentPosition[0]][adjacentPosition[1]];
+      const enemies = adjacentCell.enemies;
+
+      if (enemies === 'monster' && !feedbackMessages.includes(smellMessage)) {
+        feedbackMessages.push(smellMessage);
+      }
+
+      if (enemies === 'well' && !feedbackMessages.includes(windMessage)) {
+        feedbackMessages.push(windMessage);
+      }
+    });
 
     return { hero, feedbackMessages, isHeroAlive };
   }
 
-  heroAttacks(hero: Hero): void {
-    // TODO: Pending implementation
+  getValidAdjacentsPositions(hero: Hero): number[][] {
+    const coordsOperation = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+    const validAdjacentPositions: number[][] = [];
+    coordsOperation.forEach((coordOperation: number[]) => {
+      const newCurrentRow = hero.row + coordOperation[0];
+      const newCurrentCol = hero.col + coordOperation[1];
+
+      if ((newCurrentRow >= 0 && newCurrentRow < this.size) && (newCurrentCol >= 0 && newCurrentCol < this.size)) {
+        validAdjacentPositions.push([newCurrentRow, newCurrentCol])
+      }
+    });
+    return validAdjacentPositions;
+  }
+
+  heroAttacks(hero: Hero, Orientation: Orientation): string[] {
+    switch (Orientation) {
+      case 'N':
+        for (let row = hero.row; row >= 0; row--) {
+          if (this.board[row][hero.col].enemies?.includes('monster')) {
+            this.board[row][hero.col].enemies = undefined;
+            return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
+          }
+        }
+        break;
+
+      case 'S':
+        for (let row = hero.row; row < this.size; row++) {
+          if (this.board[row][hero.col].enemies?.includes('monster')) {
+            this.board[row][hero.col].enemies = undefined;
+            return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
+          }
+        }
+        break;
+
+      case 'E':
+        for (let col = hero.col; col < this.size; col++) {
+          if (this.board[hero.row][col].enemies?.includes('monster')) {
+            this.board[hero.row][col].enemies = undefined;
+            return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
+          }
+        }
+        break;
+
+      case 'W':
+        for (let col = hero.col; col >= 0; col--) {
+          if (this.board[hero.row][col].enemies?.includes('monster')) {
+            this.board[hero.row][col].enemies = undefined;
+            return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
+          }
+        }
+        break;
+
+      default:
+        throw new Error('Orientation is not defined');
+    }
+
+    return ['Has lanzado una flecha, pero has fallado'];
   }
 }
