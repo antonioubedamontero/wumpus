@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+
 import { GameService } from '../../services/game.service';
-import { Cell } from '../../interfaces/index';
+import { Cell, Hero } from '../../interfaces/index';
 
 @Component({
   selector: 'app-board',
@@ -8,6 +9,9 @@ import { Cell } from '../../interfaces/index';
   styleUrls: ['./board.component.scss']
 })
 export class BoardComponent implements OnInit {
+  @Input() showAllValue: boolean = false;
+  @Input() hero!: Hero;
+
   board: Cell[][] = [];
 
   constructor(private gameService: GameService) { }
@@ -16,23 +20,23 @@ export class BoardComponent implements OnInit {
     this.board = this.gameService.getBoard();
   }
 
-  hasMonster(cell: Cell): boolean {
-    return cell.enemies === 'monster';
+  showMonster(cell: Cell, cellRow: number, cellCol: number): boolean {
+    return cell.enemies === 'monster' && (this.showAllValue || (this.hero.row === cellRow && this.hero.col === cellCol));
   }
 
-  hasWell(cell: Cell): boolean {
-    return cell.enemies === 'well';
+  showWell(cell: Cell, cellRow: number, cellCol: number): boolean {
+    return cell.enemies === 'well' && (this.showAllValue || (this.hero.row === cellRow && this.hero.col === cellCol));
   }
 
-  hasGold(cell: Cell): boolean {
-    return cell.hasGold;
+  showGold(cell: Cell, cellRow: number, cellCol: number): boolean {
+    return cell.hasGold && (this.showAllValue || this.hero.hasGold || (this.hero.row === cellRow && this.hero.col === cellCol));
   }
 
-  hasHero(cell: Cell): boolean {
+  showHero(cell: Cell): boolean {
     return cell.hasHero;
   }
 
-  hasFootPrint(cell: Cell): boolean {
+  showFootPrint(cell: Cell): boolean {
     return cell.hasBeenVisited && !(cell.enemies || cell.hasHero || cell.hasGold);
   }
 }

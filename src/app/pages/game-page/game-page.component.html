@@ -1,6 +1,6 @@
 <div *ngIf="hero">
     <div class="board">
-        <app-board></app-board>
+        <app-board [showAllValue]="showAllValue" [hero]="hero"></app-board>
     </div>
     <div class="controls-container">
         <div class="feedback-message" fxLayout="column" fxLayoutAlign="center center">
@@ -8,8 +8,9 @@
                 {{ message }}
             </p>
         </div>
-        <app-controls [currentDirection]="hero.orientation" [canExitEnter]="canExitEnter"
-            [numOfHarrows]="hero.numOfHarrows" (movementResponseEmmited)="receiveMovement($event)">
+        <app-controls [currentDirection]="hero.orientation" [canExitEnter]="canExitEnter" [showAllValue]="showAllValue"
+            [numOfHarrows]="hero.numOfHarrows" (movementResponseEmmited)="receiveMovement($event)"
+            (showAllChange)="changeShowAll($event)">
         </app-controls>
     </div>
 </div>

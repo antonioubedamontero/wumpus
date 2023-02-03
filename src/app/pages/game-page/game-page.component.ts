@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 export class GamePageComponent implements OnInit {
   hero!: Hero;
   feedbackMessages: string[] = [];
+  showAllValue: boolean = false;
 
   constructor(
     private gameService: GameService,
@@ -80,5 +81,9 @@ export class GamePageComponent implements OnInit {
   get canExitEnter(): boolean {
     return (this.hero.row === -1 && this.hero.col === -1) ||
       (this.hero.hasGold && this.hero.row === this.gameService.size - 1 && this.hero.col === 0);
+  }
+
+  changeShowAll(showAllValue: boolean): void {
+    this.showAllValue = showAllValue;
   }
 }

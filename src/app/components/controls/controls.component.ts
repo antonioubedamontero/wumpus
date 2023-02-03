@@ -11,7 +11,9 @@ export class ControlsComponent {
   @Input() canExitEnter = false;
   @Input() currentDirection: Orientation = 'None';
   @Input() numOfHarrows: number = 5;
+  @Input() showAllValue: boolean = false;
   @Output() movementResponseEmmited = new EventEmitter<MovementResponse>();
+  @Output() showAllChange = new EventEmitter<boolean>();
 
   doAction(action: Action): void {
     const additionalActions = ['throwArrow', 'goForward'];
@@ -52,5 +54,10 @@ export class ControlsComponent {
       this.movementResponseEmmited.emit({ orientation });
       return;
     }
+  }
+
+  toggleShow(): void {
+    this.showAllValue = !this.showAllValue;
+    this.showAllChange.emit(this.showAllValue);
   }
 }
