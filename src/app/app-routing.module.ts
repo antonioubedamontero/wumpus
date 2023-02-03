@@ -7,7 +7,7 @@ import { GamePageComponent } from './pages/game-page/game-page.component';
 const routes: Routes = [
   { path: 'config', component: ConfigPageComponent },
   { path: 'game', component: GamePageComponent },
-  { path: '', pathMatch: 'full', redirectTo: 'game' }
+  { path: '', pathMatch: 'full', redirectTo: 'config' }
 ];
 
 @NgModule({

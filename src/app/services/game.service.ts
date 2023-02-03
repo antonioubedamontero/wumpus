@@ -8,13 +8,16 @@ import { Cell, Hero, HeroWithFeedBack, Enemy, Orientation } from '../interfaces'
 export class GameService {
   size: number = 0;
   wells: number = 0;
+  numOfHarrows: number = 0;
+
   board: Cell[][] = [];
 
   constructor() { }
 
-  createGame(size: number, wells: number): void {
+  createGame(size: number, wells: number, numOfHarrows: number): void {
     this.size = size;
     this.wells = wells;
+    this.numOfHarrows = numOfHarrows;
 
     this.createBoard(size);
     this.putCharactersInBoard('monster', 1);
@@ -168,19 +171,21 @@ export class GameService {
 
     // Actions that implies death of hero
     if (boardEnemy === 'monster') {
-      return this.heroDies(hero, 'Me ha matado el Wumpus');
+      const messages = ['Puedo percibir al Wumpus', 'Me ha matado el Wumpus'];
+      return this.heroDies(hero, messages);
     }
 
     if (boardEnemy === 'well') {
-      return this.heroDies(hero, 'He caído a un pozo');
+      const messages = ['He caído a un pozo']
+      return this.heroDies(hero, messages);
     }
 
     // get hero perceptions if any    
     return this.getHeroPerceptions(hero);
   }
 
-  heroDies(hero: Hero, message: string): HeroWithFeedBack {
-    return { hero, feedbackMessages: [message], isHeroAlive: false };
+  heroDies(hero: Hero, messages: string[]): HeroWithFeedBack {
+    return { hero, feedbackMessages: messages, isHeroAlive: false };
   }
 
   getHeroPerceptions(heroParam: Hero): HeroWithFeedBack {

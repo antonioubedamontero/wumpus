@@ -10,6 +10,7 @@ import { Action, Orientation, MovementResponse } from '../../interfaces/index';
 export class ControlsComponent {
   @Input() canExitEnter = false;
   @Input() currentDirection: Orientation = 'None';
+  @Input() numOfHarrows: number = 5;
   @Output() movementResponseEmmited = new EventEmitter<MovementResponse>();
 
   doAction(action: Action): void {

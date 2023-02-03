@@ -12,21 +12,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./game-page.component.scss']
 })
 export class GamePageComponent implements OnInit {
-  hero: Hero;
+  hero!: Hero;
   feedbackMessages: string[] = [];
 
   constructor(
     private gameService: GameService,
     private dialog: MatDialog,
     private router: Router
-  ) {
-    this.hero = { orientation: 'None', hasGold: false, row: -1, col: -1 };
-
-    // TODO: Temporal, remove later
-    this.gameService.createGame(4, 1);
-  }
+  ) { }
 
   ngOnInit(): void {
+    this.hero = { orientation: 'None', hasGold: false, row: -1, col: -1, numOfHarrows: this.gameService.numOfHarrows };
   }
 
   receiveMovement(movementResponse: MovementResponse): void {
@@ -62,8 +58,14 @@ export class GamePageComponent implements OnInit {
     }
 
     if (movementResponse.additionalAction === 'throwArrow') {
+      if (this.hero.numOfHarrows === 0) {
+        this.feedbackMessages = ['No puedes lanzar flechas. No tienes flechas'];
+        return;
+      }
+
       const feedbackMessages = this.gameService.heroAttacks(this.hero, movementResponse.orientation);
       this.feedbackMessages = feedbackMessages;
+      this.hero.numOfHarrows = this.hero.numOfHarrows - 1;
       return;
     }
   }
