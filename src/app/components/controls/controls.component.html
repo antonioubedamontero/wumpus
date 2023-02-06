@@ -1,5 +1,11 @@
 <mat-toolbar fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
-    <div class="direction-bar" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+    <div class="border-right" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-button color="primary" (click)="toggleShow()">
+            {{ showAllValue ? 'Ocultar' : 'Mostrar' }}
+        </button>
+    </div>
+
+    <div class="border-right" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
         <span>Dirección:</span>
         <mat-icon>{{ currentDirection | translateDirection }}</mat-icon>
     </div>
@@ -33,4 +39,8 @@
             turn_right
         </mat-icon>
     </button>
+
+    <div class="num-of-harrows-bar">
+        Número de flechas: {{ numOfHarrows }}
+    </div>
 </mat-toolbar>

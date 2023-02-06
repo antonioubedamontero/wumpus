@@ -8,17 +8,20 @@ import { Cell, Hero, HeroWithFeedBack, Enemy, Orientation } from '../interfaces'
 export class GameService {
   size: number = 0;
   wells: number = 0;
+  numOfHarrows: number = 0;
+
   board: Cell[][] = [];
 
   constructor() { }
 
-  createGame(size: number, wells: number): void {
+  createGame(size: number, wells: number, numOfHarrows: number): void {
     this.size = size;
     this.wells = wells;
+    this.numOfHarrows = numOfHarrows;
 
     this.createBoard(size);
-    this.putCharactersInBoard('monster', 1);
-    this.putCharactersInBoard('well', this.wells);
+    this.putCharactersInBoard({ type: 'monster', isAlive: true }, 1);
+    this.putCharactersInBoard({ type: 'well', isAlive: true }, this.wells);
     this.putCharactersInBoard('gold', 1);
   }
 
@@ -53,17 +56,18 @@ export class GameService {
     // TODO: Review this ¿anytime in edges?
     const row = Math.floor(Math.random() * (this.size - 1));
     const col = Math.floor(Math.random() * (this.size - 1));
+    const cell = this.board[row][col];
 
     if ((row === this.size - 1) && (col === 0)) {
       return false;
     }
 
-    if (character === 'gold' && !this.board[row][col].enemies) {
+    if (character === 'gold' && !cell.enemies) {
       this.board[row][col].hasGold = true;
       return true;
     }
 
-    if (!this.board[row][col].enemies && !this.board[row][col].hasGold) {
+    if (!cell.enemies && !cell.hasGold) {
       this.board[row][col].enemies = character as Enemy;
       return true;
     }
@@ -76,12 +80,13 @@ export class GameService {
   }
 
   getHeroIntoBoard(hero: Hero): Hero {
+    const maxSize = this.size - 1;
     hero.orientation = 'N';
-    hero.row = this.size - 1;
+    hero.row = maxSize;
     hero.col = 0;
 
-    this.board[this.size - 1][0].hasHero = true;
-    this.board[this.size - 1][0].hasBeenVisited = true;
+    this.board[maxSize][0].hasHero = true;
+    this.board[maxSize][0].hasBeenVisited = true;
     return hero;
   }
 
@@ -105,15 +110,11 @@ export class GameService {
     const cantAdvance = 'No puedo avanzar. Hay un muro';
 
     switch (heroParam.orientation) {
-      // TODO: Refactor this code when possible
       case 'N':
         const prevRow = heroParam.row - 1;
         if (prevRow >= 0) {
           heroWithFeedback.hero.row = prevRow;
-          this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[prevRow][heroParam.col].hasHero = true;
-          this.board[prevRow][heroParam.col].hasBeenVisited = true;
-          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
+          heroWithFeedback = this.updateHeroPositionInBoard(heroParam.row, heroParam.col, heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
@@ -122,10 +123,7 @@ export class GameService {
         const nextRow = heroParam.row + 1;
         if (nextRow < this.size) {
           heroWithFeedback.hero.row = nextRow;
-          this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[nextRow][heroParam.col].hasHero = true;
-          this.board[nextRow][heroParam.col].hasBeenVisited = true;
-          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
+          heroWithFeedback = this.updateHeroPositionInBoard(heroParam.row, heroParam.col, heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
@@ -134,10 +132,7 @@ export class GameService {
         const nextCol = heroParam.col + 1;
         if (nextCol < this.size) {
           heroWithFeedback.hero.col = nextCol;
-          this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[heroParam.row][nextCol].hasHero = true;
-          this.board[heroParam.row][nextCol].hasBeenVisited = true;
-          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
+          heroWithFeedback = this.updateHeroPositionInBoard(heroParam.row, heroParam.col, heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
@@ -146,10 +141,7 @@ export class GameService {
         const prevCol = heroParam.col - 1;
         if (prevCol >= 0) {
           heroWithFeedback.hero.col = prevCol;
-          this.board[heroParam.row][heroParam.col].hasHero = false;
-          this.board[heroParam.row][prevCol].hasHero = true;
-          this.board[heroParam.row][prevCol].hasBeenVisited = true;
-          heroWithFeedback = this.getMovementReaction(heroWithFeedback.hero);
+          heroWithFeedback = this.updateHeroPositionInBoard(heroParam.row, heroParam.col, heroWithFeedback.hero);
         } else {
           heroWithFeedback.feedbackMessages.push(cantAdvance);
         }
@@ -161,26 +153,41 @@ export class GameService {
     return heroWithFeedback;
   }
 
+  private updateHeroPositionInBoard(currehtRow: number, currentCol: number, newHeroPosition: Hero): HeroWithFeedBack {
+    this.board[currehtRow][currentCol].hasHero = false;
+    this.board[newHeroPosition.row][newHeroPosition.col].hasHero = true;
+    this.board[newHeroPosition.row][newHeroPosition.col].hasBeenVisited = true;
+    return this.getMovementReaction({ ...newHeroPosition });
+  }
+
   private getMovementReaction(heroParam: Hero): HeroWithFeedBack {
     const hero = { ...heroParam };
 
     const boardEnemy = this.board[hero.row][hero.col].enemies;
 
     // Actions that implies death of hero
-    if (boardEnemy === 'monster') {
-      return this.heroDies(hero, 'Me ha matado el Wumpus');
+    if (boardEnemy?.type === 'monster') {
+      const messages = ['Puedo percibir al Wumpus'];
+
+      if (boardEnemy?.isAlive) {
+        messages.push('Me ha matado el Wumpus');
+        return this.heroDies(hero, messages);
+      }
+
+      return { hero, feedbackMessages: messages, isHeroAlive: true };
     }
 
-    if (boardEnemy === 'well') {
-      return this.heroDies(hero, 'He caído a un pozo');
+    if (boardEnemy?.type === 'well') {
+      const messages = ['He caído a un pozo']
+      return this.heroDies(hero, messages);
     }
 
     // get hero perceptions if any    
     return this.getHeroPerceptions(hero);
   }
 
-  heroDies(hero: Hero, message: string): HeroWithFeedBack {
-    return { hero, feedbackMessages: [message], isHeroAlive: false };
+  heroDies(hero: Hero, messages: string[]): HeroWithFeedBack {
+    return { hero, feedbackMessages: messages, isHeroAlive: false };
   }
 
   getHeroPerceptions(heroParam: Hero): HeroWithFeedBack {
@@ -204,11 +211,11 @@ export class GameService {
       const adjacentCell: Cell = this.board[adjacentPosition[0]][adjacentPosition[1]];
       const enemies = adjacentCell.enemies;
 
-      if (enemies === 'monster' && !feedbackMessages.includes(smellMessage)) {
+      if (enemies?.type === 'monster' && !feedbackMessages.includes(smellMessage)) {
         feedbackMessages.push(smellMessage);
       }
 
-      if (enemies === 'well' && !feedbackMessages.includes(windMessage)) {
+      if (enemies?.type === 'well' && !feedbackMessages.includes(windMessage)) {
         feedbackMessages.push(windMessage);
       }
     });
@@ -235,8 +242,7 @@ export class GameService {
     switch (Orientation) {
       case 'N':
         for (let row = hero.row; row >= 0; row--) {
-          if (this.board[row][hero.col].enemies?.includes('monster')) {
-            this.board[row][hero.col].enemies = undefined;
+          if (this.verifyIfWumpusHasDiedInCell(row, hero.col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -244,8 +250,7 @@ export class GameService {
 
       case 'S':
         for (let row = hero.row; row < this.size; row++) {
-          if (this.board[row][hero.col].enemies?.includes('monster')) {
-            this.board[row][hero.col].enemies = undefined;
+          if (this.verifyIfWumpusHasDiedInCell(row, hero.col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -253,8 +258,7 @@ export class GameService {
 
       case 'E':
         for (let col = hero.col; col < this.size; col++) {
-          if (this.board[hero.row][col].enemies?.includes('monster')) {
-            this.board[hero.row][col].enemies = undefined;
+          if (this.verifyIfWumpusHasDiedInCell(hero.row, col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -262,8 +266,7 @@ export class GameService {
 
       case 'W':
         for (let col = hero.col; col >= 0; col--) {
-          if (this.board[hero.row][col].enemies?.includes('monster')) {
-            this.board[hero.row][col].enemies = undefined;
+          if (this.verifyIfWumpusHasDiedInCell(hero.row, col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -274,5 +277,28 @@ export class GameService {
     }
 
     return ['Has lanzado una flecha, pero has fallado'];
+  }
+
+  isWumpusAlive(): boolean {
+    for (let row = 0; row < this.size; row++) {
+      const wumpusCell = this.board[row].find((cell: Cell) => cell.enemies?.type === 'monster');
+      if (wumpusCell) {
+        return wumpusCell.enemies?.isAlive!;
+      }
+    }
+    throw new Error('Wumpus is not in placed the board');
+  }
+
+  verifyIfWumpusHasDiedInCell(row: number, col: number): boolean {
+    const enemy = this.board[row][col].enemies;
+    if (!enemy) {
+      return false;
+    }
+
+    if (enemy.type.includes('monster')) {
+      enemy.isAlive = false;
+      return true;
+    }
+    return false;
   }
 }
