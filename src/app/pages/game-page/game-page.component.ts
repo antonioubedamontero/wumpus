@@ -58,12 +58,17 @@ export class GamePageComponent implements OnInit {
       return;
     }
 
-    if (movementResponse.additionalAction === 'throwArrow') {
-      if (this.hero.numOfHarrows === 0) {
-        this.feedbackMessages = ['No puedes lanzar flechas. No tienes flechas'];
-        return;
-      }
+    if (movementResponse.additionalAction === 'throwArrow' && this.hero.numOfHarrows === 0) {
+      this.feedbackMessages = ['No puedes lanzar flechas. No tienes flechas'];
+      return;
+    }
 
+    if (movementResponse.additionalAction === 'throwArrow' && !this.gameService.isWumpusAlive()) {
+      this.feedbackMessages = ['No es necesario atacar. El Wumpus ya está muerto'];
+      return;
+    }
+
+    if (movementResponse.additionalAction === 'throwArrow') {
       const feedbackMessages = this.gameService.heroAttacks(this.hero, movementResponse.orientation);
       this.feedbackMessages = feedbackMessages;
       this.hero.numOfHarrows = this.hero.numOfHarrows - 1;

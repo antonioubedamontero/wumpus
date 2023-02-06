@@ -20,8 +20,8 @@ export class GameService {
     this.numOfHarrows = numOfHarrows;
 
     this.createBoard(size);
-    this.putCharactersInBoard('monster', 1);
-    this.putCharactersInBoard('well', this.wells);
+    this.putCharactersInBoard({ type: 'monster', isAlive: true }, 1);
+    this.putCharactersInBoard({ type: 'well', isAlive: true }, this.wells);
     this.putCharactersInBoard('gold', 1);
   }
 
@@ -56,17 +56,18 @@ export class GameService {
     // TODO: Review this ¿anytime in edges?
     const row = Math.floor(Math.random() * (this.size - 1));
     const col = Math.floor(Math.random() * (this.size - 1));
+    const cell = this.board[row][col];
 
     if ((row === this.size - 1) && (col === 0)) {
       return false;
     }
 
-    if (character === 'gold' && !this.board[row][col].enemies) {
+    if (character === 'gold' && !cell.enemies) {
       this.board[row][col].hasGold = true;
       return true;
     }
 
-    if (!this.board[row][col].enemies && !this.board[row][col].hasGold) {
+    if (!cell.enemies && !cell.hasGold) {
       this.board[row][col].enemies = character as Enemy;
       return true;
     }
@@ -79,12 +80,13 @@ export class GameService {
   }
 
   getHeroIntoBoard(hero: Hero): Hero {
+    const maxSize = this.size - 1;
     hero.orientation = 'N';
-    hero.row = this.size - 1;
+    hero.row = maxSize;
     hero.col = 0;
 
-    this.board[this.size - 1][0].hasHero = true;
-    this.board[this.size - 1][0].hasBeenVisited = true;
+    this.board[maxSize][0].hasHero = true;
+    this.board[maxSize][0].hasBeenVisited = true;
     return hero;
   }
 
@@ -164,12 +166,18 @@ export class GameService {
     const boardEnemy = this.board[hero.row][hero.col].enemies;
 
     // Actions that implies death of hero
-    if (boardEnemy === 'monster') {
-      const messages = ['Puedo percibir al Wumpus', 'Me ha matado el Wumpus'];
-      return this.heroDies(hero, messages);
+    if (boardEnemy?.type === 'monster') {
+      const messages = ['Puedo percibir al Wumpus'];
+
+      if (boardEnemy?.isAlive) {
+        messages.push('Me ha matado el Wumpus');
+        return this.heroDies(hero, messages);
+      }
+
+      return { hero, feedbackMessages: messages, isHeroAlive: true };
     }
 
-    if (boardEnemy === 'well') {
+    if (boardEnemy?.type === 'well') {
       const messages = ['He caído a un pozo']
       return this.heroDies(hero, messages);
     }
@@ -203,11 +211,11 @@ export class GameService {
       const adjacentCell: Cell = this.board[adjacentPosition[0]][adjacentPosition[1]];
       const enemies = adjacentCell.enemies;
 
-      if (enemies === 'monster' && !feedbackMessages.includes(smellMessage)) {
+      if (enemies?.type === 'monster' && !feedbackMessages.includes(smellMessage)) {
         feedbackMessages.push(smellMessage);
       }
 
-      if (enemies === 'well' && !feedbackMessages.includes(windMessage)) {
+      if (enemies?.type === 'well' && !feedbackMessages.includes(windMessage)) {
         feedbackMessages.push(windMessage);
       }
     });
@@ -234,7 +242,7 @@ export class GameService {
     switch (Orientation) {
       case 'N':
         for (let row = hero.row; row >= 0; row--) {
-          if (this.verifyIfWumpusHasDied(row, hero.col)) {
+          if (this.verifyIfWumpusHasDiedInCell(row, hero.col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -242,7 +250,7 @@ export class GameService {
 
       case 'S':
         for (let row = hero.row; row < this.size; row++) {
-          if (this.verifyIfWumpusHasDied(row, hero.col)) {
+          if (this.verifyIfWumpusHasDiedInCell(row, hero.col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -250,7 +258,7 @@ export class GameService {
 
       case 'E':
         for (let col = hero.col; col < this.size; col++) {
-          if (this.verifyIfWumpusHasDied(hero.row, col)) {
+          if (this.verifyIfWumpusHasDiedInCell(hero.row, col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -258,7 +266,7 @@ export class GameService {
 
       case 'W':
         for (let col = hero.col; col >= 0; col--) {
-          if (this.verifyIfWumpusHasDied(hero.row, col)) {
+          if (this.verifyIfWumpusHasDiedInCell(hero.row, col)) {
             return ['Has lanzado una flecha. Escuchas el grito del Wumpus.. Ha muerto'];
           }
         }
@@ -271,9 +279,24 @@ export class GameService {
     return ['Has lanzado una flecha, pero has fallado'];
   }
 
-  verifyIfWumpusHasDied(row: number, col: number): boolean {
-    if (this.board[row][col].enemies?.includes('monster')) {
-      this.board[row][col].enemies = undefined;
+  isWumpusAlive(): boolean {
+    for (let row = 0; row < this.size; row++) {
+      const wumpusCell = this.board[row].find((cell: Cell) => cell.enemies?.type === 'monster');
+      if (wumpusCell) {
+        return wumpusCell.enemies?.isAlive!;
+      }
+    }
+    throw new Error('Wumpus is not in placed the board');
+  }
+
+  verifyIfWumpusHasDiedInCell(row: number, col: number): boolean {
+    const enemy = this.board[row][col].enemies;
+    if (!enemy) {
+      return false;
+    }
+
+    if (enemy.type.includes('monster')) {
+      enemy.isAlive = false;
       return true;
     }
     return false;

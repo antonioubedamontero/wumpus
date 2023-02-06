@@ -1,4 +1,9 @@
-export type Enemy = 'well' | 'monster';
+export type EnemyType = 'well' | 'monster';
+
+export interface Enemy {
+    type: EnemyType;
+    isAlive: boolean;
+}
 
 export interface Cell {
     hasHero: boolean;

@@ -21,11 +21,11 @@ export class BoardComponent implements OnInit {
   }
 
   showMonster(cell: Cell, cellRow: number, cellCol: number): boolean {
-    return cell.enemies === 'monster' && (this.showAllValue || (this.hero.row === cellRow && this.hero.col === cellCol));
+    return cell.enemies?.type === 'monster' && (this.showAllValue || !cell.enemies.isAlive || (this.hero.row === cellRow && this.hero.col === cellCol));
   }
 
   showWell(cell: Cell, cellRow: number, cellCol: number): boolean {
-    return cell.enemies === 'well' && (this.showAllValue || (this.hero.row === cellRow && this.hero.col === cellCol));
+    return cell.enemies?.type === 'well' && (this.showAllValue || (this.hero.row === cellRow && this.hero.col === cellCol));
   }
 
   showGold(cell: Cell, cellRow: number, cellCol: number): boolean {
