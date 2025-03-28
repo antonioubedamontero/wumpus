@@ -5,9 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { PagesModule } from './pages/pages.module';
-import { PipesModule } from './pipes/pipes.module';
-
 @NgModule({
   declarations: [
     AppComponent
@@ -15,9 +12,7 @@ import { PipesModule } from './pipes/pipes.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
-    PagesModule,
-    PipesModule
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

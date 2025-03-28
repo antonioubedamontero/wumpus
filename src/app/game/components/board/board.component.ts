@@ -1,7 +1,6 @@
+import { Cell, Hero } from '../../interfaces';
+import { GameService } from './../../../services/game.service';
 import { Component, Input, OnInit } from '@angular/core';
-
-import { GameService } from '../../services/game.service';
-import { Cell, Hero } from '../../interfaces/index';
 
 @Component({
   selector: 'app-board',
@@ -14,7 +13,7 @@ export class BoardComponent implements OnInit {
 
   board: Cell[][] = [];
 
-  constructor(private gameService: GameService) { }
+  constructor(private readonly gameService: GameService) { }
 
   ngOnInit(): void {
     this.board = this.gameService.getBoard();

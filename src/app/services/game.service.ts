@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-
-import { Cell, Hero, HeroWithFeedBack, Enemy, Orientation } from '../interfaces';
+import { Cell, Enemy, Hero, HeroWithFeedBack, Orientation } from '../game/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -182,7 +181,7 @@ export class GameService {
       return this.heroDies(hero, messages);
     }
 
-    // get hero perceptions if any    
+    // get hero perceptions if any
     return this.getHeroPerceptions(hero);
   }
 
@@ -238,8 +237,8 @@ export class GameService {
     return validAdjacentPositions;
   }
 
-  heroAttacks(hero: Hero, Orientation: Orientation): string[] {
-    switch (Orientation) {
+  heroAttacks(hero: Hero, orientation: Orientation): string[] {
+    switch (orientation) {
       case 'N':
         for (let row = hero.row; row >= 0; row--) {
           if (this.verifyIfWumpusHasDiedInCell(row, hero.col)) {

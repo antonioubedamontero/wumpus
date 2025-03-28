@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Action, Orientation, MovementResponse } from '../../interfaces/index';
+import { Action, Orientation, MovementResponse } from '../../interfaces';
 
 @Component({
   selector: 'app-controls',
