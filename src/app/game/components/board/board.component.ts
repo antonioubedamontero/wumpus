@@ -1,7 +1,6 @@
+import { Cell, Hero } from '../../interfaces';
+import { GameService } from './../../../services/game.service';
 import { Component, Input, OnInit } from '@angular/core';
-
-import { GameService } from '../../services/game.service';
-import { Cell, Hero } from '../../interfaces/index';
 
 @Component({
   selector: 'app-board',
@@ -14,7 +13,9 @@ export class BoardComponent implements OnInit {
 
   board: Cell[][] = [];
 
-  constructor(private gameService: GameService) { }
+  constructor(
+    private readonly gameService: GameService
+  ){}
 
   ngOnInit(): void {
     this.board = this.gameService.getBoard();
@@ -38,5 +39,22 @@ export class BoardComponent implements OnInit {
 
   showFootPrint(cell: Cell): boolean {
     return cell.hasBeenVisited && !(cell.enemies || cell.hasHero || cell.hasGold);
+  }
+
+  getDegrees(): number {
+    switch (this.hero.orientation) {
+      case 'N':
+        return -90;
+      case 'S':
+        return 90;
+      case 'E':
+        return 0;
+      case 'W':
+        return 180;
+      case 'None':
+        return -90;
+      default:
+        throw Error('Missing orientation');
+    }
   }
 }

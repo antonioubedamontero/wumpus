@@ -1,21 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { GameService } from './../../services/game.service';
+import { Component } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { GameService } from '../../services/game.service';
+
 
 @Component({
   selector: 'app-config-page',
   templateUrl: './config-page.component.html',
   styleUrls: ['./config-page.component.scss']
 })
-export class ConfigPageComponent implements OnInit {
+export class ConfigPageComponent {
+  readonly boardSizeOptions = [4, 5, 6, 7, 8, 9];
+  readonly numOfWells = [1, 2, 3, 4];
+  readonly numOfHarrows = [1, 2, 3, 4, 5];
+
   configForm: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
-    private gameService: GameService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly gameService: GameService,
+    private readonly router: Router
   ) {
     this.configForm = this.fb.group({
       boardSize: [4, [Validators.required]],
@@ -24,14 +29,11 @@ export class ConfigPageComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void { }
-
   sendForm(): void {
     if (this.configForm.invalid) {
       return;
     }
 
-    // TODO: Review this... why appears as optional
     const size = this.configForm.get('boardSize')?.value!;
     const numOfWells = this.configForm.get('numOfWells')?.value!;
     const numOfHarrows = this.configForm.get('numOfHarrows')?.value!;

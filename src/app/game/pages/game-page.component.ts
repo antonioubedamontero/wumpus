@@ -1,10 +1,10 @@
+import { GameService } from './../../services/game.service';
 import { Component, OnInit } from '@angular/core';
 
-import { MovementResponse, Hero } from '../../interfaces/index';
-import { GameService } from '../../services/game.service';
-import { MatDialog } from '@angular/material/dialog';
-import { FinishModalComponent } from '../../components/finish-modal/finish-modal.component';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { FinishModalComponent } from '../components/finish-modal/finish-modal.component';
+import { Hero, MovementResponse } from '../interfaces';
 
 @Component({
   selector: 'app-game-page',
@@ -17,13 +17,19 @@ export class GamePageComponent implements OnInit {
   showAllValue: boolean = false;
 
   constructor(
-    private gameService: GameService,
-    private dialog: MatDialog,
-    private router: Router
+    private readonly gameService: GameService,
+    private readonly dialog: MatDialog,
+    private readonly router: Router
   ) { }
 
   ngOnInit(): void {
-    this.hero = { orientation: 'None', hasGold: false, row: -1, col: -1, numOfHarrows: this.gameService.numOfHarrows };
+    this.hero = {
+      orientation: 'None',
+      hasGold: false,
+      row: -1,
+      col: -1,
+      numOfHarrows: this.gameService.numOfHarrows
+    };
   }
 
   receiveMovement(movementResponse: MovementResponse): void {
@@ -51,6 +57,7 @@ export class GamePageComponent implements OnInit {
     if (movementResponse.additionalAction === 'goForward') {
       const { hero, feedbackMessages, isHeroAlive } = this.gameService.advanceHeroInBoard(this.hero);
       this.hero = hero;
+
       this.feedbackMessages = feedbackMessages;
       if (!isHeroAlive) {
         this.openDialog('¡Has muerto! Te han cogido tus enemigos');
@@ -72,7 +79,6 @@ export class GamePageComponent implements OnInit {
       const feedbackMessages = this.gameService.heroAttacks(this.hero, movementResponse.orientation);
       this.feedbackMessages = feedbackMessages;
       this.hero.numOfHarrows = this.hero.numOfHarrows - 1;
-      return;
     }
   }
 
