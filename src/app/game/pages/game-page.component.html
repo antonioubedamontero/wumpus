@@ -1,6 +1,9 @@
 <div *ngIf="hero">
     <div class="board">
-        <app-board [showAllValue]="showAllValue" [hero]="hero"></app-board>
+        <app-board
+          [showAllValue]="showAllValue"
+          [hero]="hero">
+        </app-board>
     </div>
     <div class="controls-container">
         <div class="feedback-message" fxLayout="column" fxLayoutAlign="center center">

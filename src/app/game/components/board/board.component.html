@@ -4,15 +4,15 @@
             <td class="image-container" *ngFor="let cell of row; let cellCol=index">
                 <div fxLayout="column" fxLayoutAlign="center center">
                     <img *ngIf="showMonster(cell, cellRow, cellCol)" class="image" src="assets/images/monster.jpg"
-                        alt="moster image">
+                        alt="moster">
                     <img *ngIf="showWell(cell, cellRow, cellCol)" class="image" src="assets/images/well.jpg"
-                        alt="well image">
-                    <img *ngIf="showHero(cell)" class="image image-hero" src="assets/images/archer.svg"
-                        alt="hero image">
+                        alt="well">
+                    <img [ngStyle]="{ rotate: getDegrees() + 'deg' }" *ngIf="showHero(cell)" class="image image-hero" src="assets/images/archer.svg"
+                        alt="hero">
                     <img *ngIf="showGold(cell, cellRow, cellCol)" class="image" src="assets/images/gold.jpg"
-                        alt="gold image">
+                        alt="gold">
                     <img *ngIf="showFootPrint(cell)" class="image image-footprint" src="assets/images/footprint.jpg"
-                        alt="footprint image">
+                        alt="footprint">
                 </div>
             </td>
         </tr>

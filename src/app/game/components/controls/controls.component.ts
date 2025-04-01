@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
 import { Action, Orientation, MovementResponse } from '../../interfaces';
 
 @Component({
@@ -41,7 +40,7 @@ export class ControlsComponent {
 
   private manageTurns(action: Action): void {
     const availablePoints: Orientation[] = ['N', 'E', 'S', 'W'];
-    const indexElem = availablePoints.findIndex((value: string) => value === this.currentDirection); 1
+    const indexElem = availablePoints.findIndex((value: string) => value === this.currentDirection);
 
     if (action === 'turnRight') {
       const orientation = (indexElem === availablePoints.length - 1) ? 'N' : availablePoints[indexElem + 1];
@@ -52,7 +51,6 @@ export class ControlsComponent {
     if (action === 'turnLeft') {
       const orientation = (indexElem === 0) ? 'W' : availablePoints[indexElem - 1];
       this.movementResponseEmmited.emit({ orientation });
-      return;
     }
   }
 

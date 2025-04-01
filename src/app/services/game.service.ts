@@ -93,7 +93,6 @@ export class GameService {
     hero.orientation = 'None';
 
     this.board[hero.row][hero.col].hasHero = false;
-
     hero.row = -1;
     hero.col = -1;
 

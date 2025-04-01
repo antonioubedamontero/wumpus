@@ -4,6 +4,10 @@
 }
 
 .num-of-harrows-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     padding-left: 10px;
     border-left: 1px solid gray;
 }

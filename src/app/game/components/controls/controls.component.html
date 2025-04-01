@@ -1,13 +1,10 @@
 <mat-toolbar fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
     <div class="border-right" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
         <button mat-button color="primary" (click)="toggleShow()">
-            {{ showAllValue ? 'Ocultar' : 'Mostrar' }}
+          <mat-icon [matTooltip]="showAllValue ? 'Ocultar' : 'Mostrar'">
+            {{ showAllValue ? 'visibility' : 'visibility_off' }}
+          </mat-icon>
         </button>
-    </div>
-
-    <div class="border-right" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-        <span>Dirección:</span>
-        <mat-icon>{{ currentDirection | translateDirection }}</mat-icon>
     </div>
 
     <button mat-icon-button>
@@ -41,6 +38,9 @@
     </button>
 
     <div class="num-of-harrows-bar">
-        Número de flechas: {{ numOfHarrows }}
+      <mat-icon matTooltip="Número de flechas">
+        rocket
+      </mat-icon>
+      {{ numOfHarrows }}
     </div>
 </mat-toolbar>

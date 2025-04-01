@@ -23,7 +23,13 @@ export class GamePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.hero = { orientation: 'None', hasGold: false, row: -1, col: -1, numOfHarrows: this.gameService.numOfHarrows };
+    this.hero = {
+      orientation: 'None',
+      hasGold: false,
+      row: -1,
+      col: -1,
+      numOfHarrows: this.gameService.numOfHarrows
+    };
   }
 
   receiveMovement(movementResponse: MovementResponse): void {
@@ -51,6 +57,7 @@ export class GamePageComponent implements OnInit {
     if (movementResponse.additionalAction === 'goForward') {
       const { hero, feedbackMessages, isHeroAlive } = this.gameService.advanceHeroInBoard(this.hero);
       this.hero = hero;
+
       this.feedbackMessages = feedbackMessages;
       if (!isHeroAlive) {
         this.openDialog('¡Has muerto! Te han cogido tus enemigos');

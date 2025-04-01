@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GamePageComponent } from './game-page.component';
+import { BaseModule } from 'src/app/base/base.module';
+import { CommonModule } from '@angular/common';
 
 describe('GamePageComponent', () => {
   let component: GamePageComponent;
@@ -8,7 +10,13 @@ describe('GamePageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GamePageComponent ]
+      declarations: [
+        GamePageComponent
+      ],
+      imports: [
+        BaseModule,
+        CommonModule
+      ]
     })
     .compileComponents();
 

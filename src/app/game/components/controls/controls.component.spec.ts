@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ControlsComponent } from './controls.component';
+import { PipesModule } from '../../pipes/pipes.module';
 
 describe('ControlsComponent', () => {
   let component: ControlsComponent;
@@ -8,7 +9,12 @@ describe('ControlsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ControlsComponent ]
+      declarations: [
+        ControlsComponent
+      ],
+      imports: [
+        PipesModule
+      ]
     })
     .compileComponents();
 

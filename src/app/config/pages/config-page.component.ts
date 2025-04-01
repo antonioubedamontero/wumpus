@@ -4,12 +4,17 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-config-page',
   templateUrl: './config-page.component.html',
   styleUrls: ['./config-page.component.scss']
 })
 export class ConfigPageComponent {
+  readonly boardSizeOptions = [4, 5, 6, 7, 8, 9];
+  readonly numOfWells = [1, 2, 3, 4];
+  readonly numOfHarrows = [1, 2, 3, 4, 5];
+
   configForm: FormGroup;
 
   constructor(
@@ -29,7 +34,6 @@ export class ConfigPageComponent {
       return;
     }
 
-    // TODO: Review this... why appears as optional
     const size = this.configForm.get('boardSize')?.value!;
     const numOfWells = this.configForm.get('numOfWells')?.value!;
     const numOfHarrows = this.configForm.get('numOfHarrows')?.value!;
